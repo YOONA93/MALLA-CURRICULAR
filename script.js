@@ -2,7 +2,7 @@
 
 // 1. Definición de la estructura de datos de la malla curricular
 // Cada semestre es un objeto con un 'semester' (número) y 'subjects' (un array de materias).
-// Cada materia tiene un 'id' (código), 'name' (nombre completo), y 'prerequisites' (un array de IDs de materias).
+// Cada materia tiene un 'id' (código único), 'name' (nombre completo), y 'prerequisites' (un array de IDs de materias).
 const curriculum = [
     {
         semester: 1,
@@ -21,7 +21,7 @@ const curriculum = [
         subjects: [
             { id: 'MT201C', name: 'CALCULO DIFERENCIAL E INTEGRAL', prerequisites: ['MT301C'] },
             { id: 'FACE201', name: 'TEORIA DEL CONOCIMIENTO CIENTIFICO', prerequisites: ['FACE101'] },
-            { id: 'CEDI_A2', name: 'COMPETENCIAS EN INGLES A2', prerequisites: [] }, // Se cambió CI207 a CEDI_A2 para evitar duplicado
+            { id: 'CEDI_A2', name: 'COMPETENCIAS EN INGLES A2', prerequisites: [] }, // ID ajustado de CEDI A2
             { id: 'DR551', name: 'DERECHO CONSTITUCIONAL', prerequisites: [] },
             { id: 'CP101', name: 'FUNDAMENTOS CONTABLES', prerequisites: [] },
             { id: 'AE101', name: 'FUNDAMENTOS DE ADMINISTRACION', prerequisites: [] },
@@ -83,10 +83,10 @@ const curriculum = [
     {
         semester: 8,
         subjects: [
-            { id: 'CI808_1', name: 'ELECTIVA II', prerequisites: [] }, // Se cambió ID para evitar duplicado
+            { id: 'CI808_S8', name: 'ELECTIVA II', prerequisites: [] }, // ID ajustado para ser único en S8
             { id: 'CI809', name: 'ELECTIVA II (COMPET. COMUNICATIVAS E IDIOMATICAS)', prerequisites: ['HT503'] },
             { id: 'CI807', name: 'INTERNATIONAL PUBLIC RELATIONS AND PROTOCOL', prerequisites: ['CI508'] },
-            { id: 'CI802_PLAN', name: 'PLAN DE NEGOCIOS DE EXPORTACION', prerequisites: ['CI803'] }, // Se cambió ID para evitar duplicado
+            { id: 'CI802_PLAN', name: 'PLAN DE NEGOCIOS DE EXPORTACION', prerequisites: ['CI803'] }, // ID ajustado
             { id: 'CI132', name: 'PRECIOS Y COTIZACION INTERNACIONAL', prerequisites: ['CI120'] },
         ]
     },
@@ -94,23 +94,22 @@ const curriculum = [
         semester: 9,
         subjects: [
             { id: 'UPC09', name: 'ACTIVIDAD CULTURAL', prerequisites: [] },
-            { id: 'CEDI_B1', name: 'COMPETENCIAS EN INGLES B1', prerequisites: [] }, // Se cambió ID para evitar duplicado
-            { id: 'CI808_2', name: 'ELECTIVA II', prerequisites: [] }, // Se cambió ID para evitar duplicado (confirmar si es la misma que CI808_1)
+            { id: 'CEDI_B1', name: 'COMPETENCIAS EN INGLES B1', prerequisites: [] }, // ID ajustado de CEDI B1
+            { id: 'CI808_S9', name: 'ELECTIVA II', prerequisites: [] }, // ID ajustado para ser único en S9 (asumiendo que es una electiva diferente a la de S8)
             { id: 'CI803', name: 'FINANZAS INTERNACIONALES', prerequisites: ['CI132'] },
             { id: 'CI135', name: 'LEGISLACION ADUANERA Y TRIBUTARIA', prerequisites: ['CI702'] },
             { id: 'CI801', name: 'PROYECTO DE INVESTIGACION', prerequisites: ['CI501'] },
-            { id: 'CI802_REGIMEN', name: 'REGIMEN DE CAMBIOS INTERNACIONALES', prerequisites: ['CI801'] }, // Se cambió ID para evitar duplicado
+            { id: 'CI802_REGIMEN', name: 'REGIMEN DE CAMBIOS INTERNACIONALES', prerequisites: ['CI801'] }, // ID ajustado
         ]
     },
     {
         semester: 10,
         subjects: [
-            { id: 'CEDI_B2', name: 'COMPETENCIAS EN INGLES B2', prerequisites: ['CEDI_B1'] }, // Se cambió ID para evitar duplicado
+            { id: 'CEDI_B2', name: 'COMPETENCIAS EN INGLES B2', prerequisites: ['CEDI_B1'] }, // ID ajustado
             { id: 'CI105', name: 'PRACTICA EMPRESARIAL CURRICULAR', prerequisites: ['CI508'] },
         ]
     }
 ];
-
 
 // 2. Estado global para almacenar las materias aprobadas
 let approvedSubjects = new Set(); // Usamos un Set para un acceso y manejo eficiente de IDs únicos.
@@ -138,7 +137,7 @@ function saveApprovedSubjects() {
 
 // 6. Función para verificar si una materia tiene todos sus requisitos cumplidos
 function hasMetPrerequisites(subjectId) {
-    // Encontrar la materia en la estructura de datos
+    // Encontrar la materia en la estructura de datos. flatMap recorre todos los subjects de todos los semestres.
     const subject = curriculum.flatMap(s => s.subjects).find(sub => sub.id === subjectId);
 
     if (!subject) {
@@ -165,151 +164,20 @@ function getMissingPrerequisitesNames(subjectId) {
     const missing = [];
     for (const prereqId of subject.prerequisites) {
         if (!approvedSubjects.has(prereqId)) {
-            // Encontrar el nombre de la materia requisito
+            // Encontrar el nombre de la materia requisito usando su ID
             const prereqSubject = curriculum.flatMap(s => s.subjects).find(sub => sub.id === prereqId);
-            missing.push(prereqSubject ? prereqSubject.name : `ID: ${prereqId}`);
+            missing.push(prereqSubject ? prereqSubject.name : `Materia desconocida (ID: ${prereqId})`);
         }
     }
     return missing;
 }
 
 // 8. Función para mostrar el mensaje de requisitos faltantes
-function showMessageBox(missingSubjects) {
-    messageText.innerHTML = `Para aprobar este ramo, debes aprobar primero los siguientes:
-    <ul class="list-disc list-inside mt-2 space-y-1">
-        ${missingSubjects.map(name => `<li class="text-gray-800 dark:text-gray-200">${name}</li>`).join('')}
-    </ul>`;
-    messageBox.classList.add('active'); // Muestra el mensaje
-    messageBox.classList.remove('hidden'); // Asegura que se muestre (para Tailwind)
-}
-
-// 9. Función para ocultar el mensaje de requisitos
-function hideMessageBox() {
-    messageBox.classList.remove('active'); // Oculta el mensaje
-    messageBox.classList.add('hidden'); // Asegura que se oculte (para Tailwind)
-}
-
-// 10. Función para renderizar (dibujar/actualizar) la malla curricular en el DOM
-function renderCurriculum() {
-    curriculumGrid.innerHTML = ''; // Limpiar el contenido actual para redibujar
-
-    curriculum.forEach(semesterData => {
-        // Crear el contenedor para cada columna de semestre
-        const semesterColumn = document.createElement('div');
-        semesterColumn.classList.add('semester-column', 'flex', 'flex-col', 'gap-4', 'p-2', 'rounded-lg'); // Añadir clases de Tailwind
-
-        // Crear el encabezado del semestre
-        const semesterHeader = document.createElement('h2');
-        semesterHeader.classList.add('semester-header', 'text-lg', 'sticky', 'top-0', 'z-10'); // Clases para estilo y sticky
-        semesterHeader.textContent = `Semestre ${semesterData.semester}`;
-        semesterColumn.appendChild(semesterHeader);
-
-        // Crear las tarjetas de materias para este semestre
-        semesterData.subjects.forEach(subject => {
-            const subjectCard = document.createElement('div');
-            subjectCard.classList.add('subject-card'); // Clase base para la tarjeta
-            subjectCard.dataset.id = subject.id; // Almacenar el ID de la materia en un atributo de datos
-
-            // Verificar si la materia está aprobada
-            if (approvedSubjects.has(subject.id)) {
-                subjectCard.classList.add('approved');
-            }
-
-            // Verificar si la materia está bloqueada (requisitos no cumplidos)
-            if (!hasMetPrerequisites(subject.id) && !approvedSubjects.has(subject.id)) {
-                subjectCard.classList.add('locked');
-            }
-
-            subjectCard.textContent = subject.name; // Mostrar el nombre de la materia
-
-            // Añadir el evento click a cada tarjeta de materia
-            subjectCard.addEventListener('click', () => {
-                toggleSubjectStatus(subject.id);
-            });
-
-            semesterColumn.appendChild(subjectCard);
-        });
-
-        curriculumGrid.appendChild(semesterColumn);
-    });
-}
-
-// 11. Función para alternar el estado de aprobación de una materia
-function toggleSubjectStatus(subjectId) {
-    // Si la materia ya está aprobada, la desaprobamos
-    if (approvedSubjects.has(subjectId)) {
-        // Antes de desaprobar, verificar si otras materias dependen de esta.
-        // Si hay dependencias aprobadas, no se puede desaprobar esta materia.
-        const dependentSubjects = curriculum.flatMap(s => s.subjects).filter(sub =>
-            sub.prerequisites.includes(subjectId) && approvedSubjects.has(sub.id)
-        );
-
-        if (dependentSubjects.length > 0) {
-            const dependentNames = dependentSubjects.map(s => s.name).join(', ');
-            showMessageBox([`No puedes desaprobar "${curriculum.flatMap(s => s.subjects).find(sub => sub.id === subjectId).name}" porque las siguientes materias dependen de ella y ya están aprobadas: ${dependentNames}. Desaprueba esas primero.`]);
-            return;
-        }
-
-        approvedSubjects.delete(subjectId); // Remover del conjunto de aprobadas
-        saveApprovedSubjects(); // Guardar el cambio
-        renderCurriculum(); // Volver a dibujar la malla
-        return; // Salir de la función
-    }
-
-    // Si la materia no está aprobada, intentamos aprobarla
-    if (hasMetPrerequisites(subjectId)) {
-        approvedSubjects.add(subjectId); // Añadir al conjunto de aprobadas
-        saveApprovedSubjects(); // Guardar el cambio
-        renderCurriculum(); // Volver a dibujar la malla
-    } else {
-        // Si los requisitos no se cumplen, mostrar el mensaje
-        const missing = getMissingPrerequisitesNames(subjectId);
-        showMessageBox(missing);
-    }
-}
-
-// 12. Event Listener para el botón de cerrar el mensaje
-closeMessageButton.addEventListener('click', hideMessageBox);
-
-// 13. Función para inicializar la aplicación
-function initializeCurriculum() {
-    loadApprovedSubjects(); // Cargar el estado guardado
-    renderCurriculum(); // Dibujar la malla con el estado inicial
-}
-
-// 14. Ejecutar la inicialización cuando el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', initializeCurriculum);
-
-// Opcional: Implementación de un botón para cambiar el tema (modo oscuro/claro)
-// Puedes agregar un botón en el index.html con un ID como 'theme-toggle'
-// <button id="theme-toggle" class="theme-toggle-button">Modo Oscuro</button>
-// Y luego añadir el siguiente JavaScript:
-
-/*
-const themeToggleButton = document.createElement('button');
-themeToggleButton.id = 'theme-toggle';
-themeToggleButton.classList.add('theme-toggle-button');
-themeToggleButton.textContent = 'Modo Oscuro';
-document.body.appendChild(themeToggleButton);
-
-themeToggleButton.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    const isDarkMode = document.body.classList.contains('dark');
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    themeToggleButton.textContent = isDarkMode ? 'Modo Claro' : 'Modo Oscuro';
-});
-
-// Cargar el tema guardado al iniciar
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
-        themeToggleButton.textContent = 'Modo Claro';
-    } else {
-        document.body.classList.remove('dark');
-        themeToggleButton.textContent = 'Modo Oscuro';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', loadTheme);
-*/
+function showMessageBox(messages) {
+    // 'messages' puede ser un array de strings (para requisitos) o un solo string para otros avisos.
+    let content = '';
+    if (Array.isArray(messages)) {
+        // Si son requisitos faltantes
+        content = `Para aprobar este ramo, debes aprobar primero los siguientes:
+        <ul class="list-disc list-inside mt-2 space-y-1">
+            ${messages.map(name => `<li class="text-gray-
