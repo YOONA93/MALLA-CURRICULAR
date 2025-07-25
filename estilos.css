@@ -1,121 +1,89 @@
 /* estilos.css */
 
-/* Variables CSS para definir las paletas de colores */
-/* Modo Claro (Azules) */
+/* Variables CSS para definir la paleta de colores en tonos azules (Modo Claro) */
 :root {
-    --primary-light: #e0f2fe; /* light-blue-50 */
-    --secondary-light: #90cdf4; /* blue-300 */
-    --accent-light: #2563eb; /* blue-600 (para aprobado) */
-    --text-light: #1f2937; /* gray-900 */
-    --border-light: #bfdbfe; /* blue-200 */
-    --header-text-light: #1e40af; /* blue-800 */
+    --primary-bg: #e0f2fe; /* light-blue-50 para fondo */
+    --secondary-bg: #90cdf4; /* blue-300 para encabezados de semestre */
+    --accent-color: #2563eb; /* blue-600 para materias aprobadas */
+    --text-color: #1f2937; /* gray-900 para texto general */
+    --border-color: #bfdbfe; /* blue-200 para bordes de tarjetas */
+    --header-title-color: #1e40af; /* blue-800 para el título principal */
+    --locked-bg: #fca5a5; /* red-300 para materias bloqueadas */
+    --locked-text: #b91c1c; /* red-800 para texto de materias bloqueadas */
+    --message-box-bg: #ffffff; /* blanco para el fondo del mensaje */
+    --message-text-color: #4b5563; /* gray-700 para texto del mensaje */
+    --message-header-color: #dc2626; /* red-600 para el título del mensaje */
+    --button-bg: #2563eb; /* blue-600 para botones */
+    --button-hover-bg: #1d4ed8; /* blue-700 para hover de botones */
 }
 
-/* Modo Oscuro (Verdes Pasteles) */
-.dark {
-    --primary-dark: #1f2937; /* dark-gray-900 */
-    --secondary-dark: #6ee7b7; /* green-300 */
-    --accent-dark: #059669; /* green-600 (para aprobado) */
-    --text-dark: #f9fafb; /* gray-50 */
-    --border-dark: #34d399; /* green-400 */
-    --header-text-dark: #4ade80; /* green-400 */
-}
-
-/* Estilos generales para el cuerpo y transiciones */
+/* Estilos generales para el cuerpo */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--primary-light); /* Fondo claro por defecto */
-    color: var(--text-light); /* Texto claro por defecto */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave entre modos */
-}
-
-/* Aplicar estilos del modo oscuro cuando la clase 'dark' está presente */
-body.dark {
-    background-color: var(--primary-dark);
-    color: var(--text-dark);
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Estilos para el encabezado principal */
 h1 {
-    color: var(--header-text-light); /* Color del título en modo claro */
+    color: var(--header-title-color);
 }
 
-body.dark h1 {
-    color: var(--header-text-dark); /* Color del título en modo oscuro */
-}
-
-/* Estilos para las tarjetas de materias (sujeto) */
+/* Estilos para las tarjetas de materias (subject-card) */
 .subject-card {
-    background-color: white; /* Fondo blanco por defecto */
-    border: 1px solid var(--border-light); /* Borde claro por defecto */
-    border-radius: 0.5rem; /* Bordes redondeados */
-    padding: 1rem; /* Espaciado interno */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-    cursor: pointer; /* Cursor de puntero para indicar interactividad */
-    transition: all 0.2s ease-in-out; /* Transición suave para hover y cambios de estado */
-    display: flex; /* Para centrar contenido */
-    align-items: center; /* Centrado vertical */
-    justify-content: center; /* Centrado horizontal */
-    text-align: center; /* Centrado de texto */
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     min-height: 80px; /* Altura mínima para las tarjetas */
-}
-
-body.dark .subject-card {
-    background-color: #374151; /* gray-700 en modo oscuro */
-    border-color: var(--border-dark); /* Borde oscuro */
+    font-size: 0.9rem; /* Tamaño de fuente ligeramente más pequeño */
+    line-height: 1.3; /* Espaciado de línea para legibilidad */
 }
 
 .subject-card:hover {
-    transform: translateY(-3px); /* Ligero efecto de elevación al pasar el mouse */
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* Estilos para materias aprobadas */
 .subject-card.approved {
-    background-color: var(--accent-light); /* Color de acento en modo claro */
-    color: white; /* Texto blanco para contraste */
-    text-decoration: line-through; /* Tachado */
-    border-color: var(--accent-light); /* Borde del mismo color */
-}
-
-body.dark .subject-card.approved {
-    background-color: var(--accent-dark); /* Color de acento en modo oscuro */
-    border-color: var(--accent-dark);
+    background-color: var(--accent-color);
+    color: white;
+    text-decoration: line-through;
+    border-color: var(--accent-color);
 }
 
 /* Estilos para materias bloqueadas (con requisitos no cumplidos) */
 .subject-card.locked {
-    background-color: #fca5a5; /* red-300 (indicador de bloqueado) */
-    color: #b91c1c; /* red-800 */
-    cursor: not-allowed; /* Cursor de prohibido */
-    opacity: 0.7; /* Ligeramente transparente */
-    filter: grayscale(30%); /* Desaturar un poco */
+    background-color: var(--locked-bg);
+    color: var(--locked-text);
+    cursor: not-allowed;
+    opacity: 0.7;
+    filter: grayscale(30%);
     pointer-events: auto; /* Permite clics para mostrar mensaje */
-}
-
-body.dark .subject-card.locked {
-    background-color: #ef4444; /* red-500 en modo oscuro */
-    color: #fecaca; /* red-200 */
 }
 
 /* Estilos para las cabeceras de semestre */
 .semester-header {
-    background-color: var(--secondary-light); /* Color secundario en modo claro */
-    color: var(--text-light); /* Texto oscuro */
-    padding: 0.75rem 1rem; /* Espaciado */
-    border-radius: 0.5rem; /* Bordes redondeados */
-    font-weight: 600; /* Semibold */
-    text-align: center; /* Centrado de texto */
-    margin-bottom: 1rem; /* Margen inferior */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-body.dark .semester-header {
-    background-color: var(--secondary-dark); /* Color secundario en modo oscuro */
-    color: var(--text-dark); /* Texto claro */
-}
-
-/* Media Queries para responsividad */
+/* Media Queries para responsividad (mantienen el mismo comportamiento) */
 @media (min-width: 640px) { /* sm */
     #curriculum-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -143,6 +111,7 @@ body.dark .semester-header {
 /* Estilos específicos para el mensaje de requisitos */
 #message-box {
     display: none; /* Oculto por defecto */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
 }
 
 #message-box.active {
@@ -150,45 +119,24 @@ body.dark .semester-header {
 }
 
 #message-box > div {
-    /* Estilos del cuadro de mensaje */
+    background-color: var(--message-box-bg);
+    color: var(--message-text-color);
     animation: fadeIn 0.3s ease-out;
+}
+
+#message-box h3 {
+    color: var(--message-header-color);
+}
+
+#message-box button {
+    background-color: var(--button-bg);
+}
+
+#message-box button:hover {
+    background-color: var(--button-hover-bg);
 }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
-}
-
-/* Botón de cierre dentro del mensaje */
-#close-message {
-    /* Estilos definidos con Tailwind en el HTML */
-}
-
-/* Estilos adicionales para accesibilidad o futuras expansiones */
-/* Por ejemplo, un botón para alternar el modo oscuro/claro */
-/* Puedes añadir un botón en el HTML y un event listener en script.js */
-.theme-toggle-button {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    background-color: var(--accent-light);
-    color: white;
-    padding: 0.75rem 1rem;
-    border-radius: 9999px; /* Fully rounded */
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s ease;
-    z-index: 100;
-}
-
-.theme-toggle-button:hover {
-    background-color: var(--accent-light); /* Un tono más oscuro */
-}
-
-body.dark .theme-toggle-button {
-    background-color: var(--accent-dark);
-}
-
-body.dark .theme-toggle-button:hover {
-    background-color: var(--accent-dark); /* Un tono más oscuro */
 }
